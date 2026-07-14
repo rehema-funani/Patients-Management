@@ -1,17 +1,18 @@
 import api from "./api";
+export async function addVitals(data: {
+  patient: number;
+  visit_date: string;
+  height: number;
+  weight: number;
+  bmi: number;
+  systolic: number;
+  diastolic: number;
+  pulse: number;
+  temperature: number;
+  respiratory_rate: number;
+  spo2: number;
+}) {
+  const response = await api.post("/vital/create", data);
 
-export async function addVital(data:any){
-
-const token=localStorage.getItem("token");
-
-return api.post(
-"/vital/add",
-data,
-{
-headers:{
-Authorization:`Bearer ${token}`
-}
-}
-);
-
+  return response.data;
 }

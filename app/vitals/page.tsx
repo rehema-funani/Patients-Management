@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 
 import Navbar from "../components/layout/Navbar";
 import Stepper from "../components/layout/Stepper";
@@ -16,50 +15,46 @@ import { addVitals } from "../services/patient";
 
 export default function VitalsPage() {
   const router = useRouter();
-
   const search = useSearchParams();
 
-  const patientId = Number(
-    search.get("patient")
-  );
+  const patientId = Number(search.get("patient"));
 
-  const [visitDate, setVisitDate] =
-    useState("");
-
-  const [height, setHeight] =
-    useState("");
-
-  const [weight, setWeight] =
-    useState("");
+  const [visitDate, setVisitDate] = useState("");
+  const [height, setHeight] = useState("");
+  const [weight, setWeight] = useState("");
 
   const bmi = calculateBMI(
     Number(weight),
     Number(height)
   );
 
-  async function handleSubmit(
-    e: React.FormEvent
-  ) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
     try {
-      const response =
-        await addVitals({
-          visit_date: visitDate,
-          height: Number(height),
-          weight: Number(weight),
-          bmi,
-          patient_id: patientId,
-        });
+      const response = await addVitals({
+        patient: patientId,
+        visit_date: visitDate,
+        height: Number(height),
+        weight: Number(weight),
+        bmi,
+      });
 
-      const vitalId =
-        response.data.id;
+      const vitalId = response.data.id;
 
-      router.push(
-`/assessment/general?patient=${patientId}&vital=${vitalId}&bmi=${bmi}`
-);
+      if (bmi <= 25) {
+        router.push(
+          `/assessment/general?patient=${patientId}&vital=${vitalId}&bmi=${bmi}`
+        );
+      } else {
+        router.push(
+          `/assessment/overweight?patient=${patientId}&vital=${vitalId}&bmi=${bmi}`
+        );
+      }
+
     } catch (err) {
       console.error(err);
+      alert("Failed to save vitals.");
     }
   }
 
@@ -86,32 +81,29 @@ export default function VitalsPage() {
               label="Visit Date"
               type="date"
               value={visitDate}
-              onChange={(e) =>
-                setVisitDate(e.target.value)
-              }
+              onChange={(e) => setVisitDate(e.target.value)}
+              required
             />
 
             <Input
               label="Height (cm)"
               type="number"
               value={height}
-              onChange={(e) =>
-                setHeight(e.target.value)
-              }
+              onChange={(e) => setHeight(e.target.value)}
+              required
             />
 
             <Input
               label="Weight (kg)"
               type="number"
               value={weight}
-              onChange={(e) =>
-                setWeight(e.target.value)
-              }
+              onChange={(e) => setWeight(e.target.value)}
+              required
             />
 
             <Input
               label="BMI"
-              value={bmi}
+              value={bmi || ""}
               readOnly
             />
 

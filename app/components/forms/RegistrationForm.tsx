@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 import Card from "../ui/Card";
 import Input from "../ui/Input";
@@ -39,17 +40,31 @@ export default function RegistrationForm() {
   ) => {
     e.preventDefault();
 
+    console.log("Submitting:", form);
+
     try {
       setLoading(true);
 
-      await registerPatient(form);
+      const response = await registerPatient(form);
+
+      console.log("API Success:", response);
 
       alert("Patient registered successfully!");
 
       router.push("/patients");
     } catch (error) {
-      console.error(error);
-      alert("Failed to register patient.");
+      console.error("API Error:", error);
+
+      if (axios.isAxiosError(error)) {
+        console.log("Status:", error.response?.status);
+        console.log("Data:", error.response?.data);
+
+        alert(
+          JSON.stringify(error.response?.data ?? "Unknown server error")
+        );
+      } else {
+        alert("Failed to register patient.");
+      }
     } finally {
       setLoading(false);
     }
