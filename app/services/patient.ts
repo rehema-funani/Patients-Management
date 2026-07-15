@@ -69,6 +69,10 @@ export async function addVitals(data: {
 /* ===========================
    VISITS
 =========================== */
+export async function getVitals() {
+  const response = await api.get("/vital/view");
+  return response.data;
+}
 
 export async function addVisit(data: {
   patient: number;

@@ -8,8 +8,6 @@ import clsx from "clsx";
 const links = [
   { href: "/", label: "Register Patient" },
   { href: "/vitals", label: "Vitals" },
-  { href: "/assessment/overweight", label: "Overweight Assessment" },
-  { href: "/assessment/general", label: "General Assessment" },
   { href: "/patients", label: "Patients" },
 ];
 

@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { calculateAge } from "../../utils/age";
+import { bmiStatus } from "../../utils/bmi";
 
 interface Patient {
   id: number;
@@ -12,17 +14,31 @@ interface Patient {
   reg_date: string;
 }
 
-interface Props {
-  patients: Patient[];
+interface Vital {
+  id: number;
+  patient: number;
+  visit_date: string;
+  bmi: number;
 }
 
-export default function PatientTable({ patients }: Props) {
+interface Props {
+  patients: Patient[];
+  latestVitalByPatient: Map<number, Vital>;
+}
+
+const statusStyles: Record<string, string> = {
+  Underweight: "bg-[#3B76A6]/10 text-[#3B76A6]",
+  Normal: "bg-[#3F8F5F]/10 text-[#3F8F5F]",
+  Overweight: "bg-[#C87F1B]/10 text-[#C87F1B]",
+};
+
+export default function PatientTable({ patients, latestVitalByPatient }: Props) {
   return (
     <div className="overflow-x-auto bg-white rounded-xl border border-[#DCE4E4]">
       <table className="min-w-full">
         <thead>
           <tr className="border-b border-[#DCE4E4]">
-            {["Patient ID", "Name", "Gender", "DOB", "Registered", ""].map((h) => (
+            {["Patient ID", "Name", "Age", "Gender", "Last BMI Status", "Registered", ""].map((h) => (
               <th
                 key={h}
                 className="text-left px-5 py-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#5C7079]"
@@ -34,62 +50,74 @@ export default function PatientTable({ patients }: Props) {
         </thead>
 
         <tbody>
-          {patients.map((patient, i) => (
-            <tr
-              key={patient.id}
-              className={`hover:bg-[#1B4B91]/[0.03] transition-colors ${
-                i !== patients.length - 1 ? "border-b border-[#DCE4E4]" : ""
-              }`}
-            >
-              <td className="px-5 py-4">
-                <span
-                  className="text-[#14232B] text-sm"
-                  style={{ fontFamily: "var(--font-mono)" }}
-                >
-                  {patient.unique}
-                </span>
-              </td>
+          {patients.map((patient, i) => {
+            const vital = latestVitalByPatient.get(patient.id);
+            const status = vital ? bmiStatus(vital.bmi) : null;
 
-              <td className="px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <span className="w-8 h-8 shrink-0 rounded-full bg-[#1B4B91]/10 text-[#1B4B91] flex items-center justify-center text-xs font-semibold">
-                    {patient.firstname[0]}
-                    {patient.lastname[0]}
+            return (
+              <tr
+                key={patient.id}
+                className={`hover:bg-[#1B4B91]/[0.03] transition-colors ${
+                  i !== patients.length - 1 ? "border-b border-[#DCE4E4]" : ""
+                }`}
+              >
+                <td className="px-5 py-4">
+                  <span className="text-[#14232B] text-sm" style={{ fontFamily: "var(--font-mono)" }}>
+                    {patient.unique}
                   </span>
-                  <span className="font-medium text-[#14232B] text-sm">
-                    {patient.firstname} {patient.lastname}
-                  </span>
-                </div>
-              </td>
+                </td>
 
-              <td className="px-5 py-4 text-sm text-[#5C7079]">
-                {patient.gender}
-              </td>
+                <td className="px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 shrink-0 rounded-full bg-[#1B4B91]/10 text-[#1B4B91] flex items-center justify-center text-xs font-semibold">
+                      {patient.firstname[0]}
+                      {patient.lastname[0]}
+                    </span>
+                    <span className="font-medium text-[#14232B] text-sm">
+                      {patient.firstname} {patient.lastname}
+                    </span>
+                  </div>
+                </td>
 
-              <td className="px-5 py-4 text-sm text-[#5C7079]" style={{ fontFamily: "var(--font-mono)" }}>
-                {patient.dob}
-              </td>
+                <td className="px-5 py-4 text-sm text-[#5C7079]">
+                  {calculateAge(patient.dob)}
+                </td>
 
-              <td className="px-5 py-4 text-sm text-[#5C7079]" style={{ fontFamily: "var(--font-mono)" }}>
-                {patient.reg_date}
-              </td>
+                <td className="px-5 py-4 text-sm text-[#5C7079]">
+                  {patient.gender}
+                </td>
 
-              <td className="px-5 py-4">
-                <Link
-                  href={`/vitals?patient=${patient.id}`}
-                  className="text-[#1B4B91] font-semibold text-sm hover:underline"
-                >
-                  Continue →
-                </Link>
-              </td>
-            </tr>
-          ))}
+                <td className="px-5 py-4">
+                  {status ? (
+                    <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusStyles[status]}`}>
+                      {status}
+                    </span>
+                  ) : (
+                    <span className="text-xs text-[#9CAAAA]">No vitals yet</span>
+                  )}
+                </td>
+
+                <td className="px-5 py-4 text-sm text-[#5C7079]" style={{ fontFamily: "var(--font-mono)" }}>
+                  {patient.reg_date}
+                </td>
+
+                <td className="px-5 py-4">
+                  <Link
+                    href={`/vitals?patient=${patient.id}`}
+                    className="text-[#1B4B91] font-semibold text-sm hover:underline"
+                  >
+                    Continue →
+                  </Link>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
 
       {patients.length === 0 && (
         <div className="text-center py-12 text-[#5C7079] text-sm">
-          No patients registered yet.
+          No patients match this filter.
         </div>
       )}
     </div>
