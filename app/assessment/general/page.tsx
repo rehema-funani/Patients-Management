@@ -1,15 +1,19 @@
+import { Suspense } from "react";
+
 import Navbar from "../../components/layout/Navbar";
 import Stepper from "../../components/layout/Stepper";
 import GeneralAssessmentForm from "../../components/forms/GeneralAssessmentForm";
 
 export default function GeneralAssessmentPage() {
   return (
-    <main className="min-h-screen">
+    <main className="min-h-screen bg-[#F6F8F8]">
       <Navbar />
 
       <section className="max-w-7xl mx-auto py-10 px-6">
         <Stepper current={3} />
-        <GeneralAssessmentForm />
+        <Suspense fallback={<div className="text-center py-12 text-[#5C7079]">Loading...</div>}>
+          <GeneralAssessmentForm />
+        </Suspense>
       </section>
     </main>
   );

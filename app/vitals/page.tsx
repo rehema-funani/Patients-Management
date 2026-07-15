@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 
 import Navbar from "../components/layout/Navbar";
@@ -13,7 +13,7 @@ import Button from "../components/ui/Button";
 import { calculateBMI } from "../utils/bmi";
 import { addVitals } from "../services/patient";
 
-export default function VitalsPage() {
+function VitalsForm() {
   const router = useRouter();
   const search = useSearchParams();
 
@@ -23,10 +23,7 @@ export default function VitalsPage() {
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
 
-  const bmi = calculateBMI(
-    Number(weight),
-    Number(height)
-  );
+  const bmi = calculateBMI(Number(weight), Number(height));
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -51,7 +48,6 @@ export default function VitalsPage() {
           `/assessment/overweight?patient=${patientId}&vital=${vitalId}&bmi=${bmi}`
         );
       }
-
     } catch (err) {
       console.error(err);
       alert("Failed to save vitals.");
@@ -59,62 +55,61 @@ export default function VitalsPage() {
   }
 
   return (
+    <Card>
+      <h2 className="text-2xl font-bold mb-6">
+        Patient Vitals
+      </h2>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <Input
+          label="Visit Date"
+          type="date"
+          value={visitDate}
+          onChange={(e) => setVisitDate(e.target.value)}
+          required
+        />
+
+        <Input
+          label="Height (cm)"
+          type="number"
+          value={height}
+          onChange={(e) => setHeight(e.target.value)}
+          required
+        />
+
+        <Input
+          label="Weight (kg)"
+          type="number"
+          value={weight}
+          onChange={(e) => setWeight(e.target.value)}
+          required
+        />
+
+        <Input
+          label="BMI"
+          value={bmi || ""}
+          readOnly
+        />
+
+        <Button type="submit">
+          Continue →
+        </Button>
+      </form>
+    </Card>
+  );
+}
+
+export default function VitalsPage() {
+  return (
     <>
       <Navbar />
 
       <main className="max-w-3xl mx-auto p-8">
+        <Stepper current={3} />
 
-        <Stepper current={2} />
-
-        <Card>
-
-          <h2 className="text-2xl font-bold mb-6">
-            Patient Vitals
-          </h2>
-
-          <form
-            onSubmit={handleSubmit}
-            className="space-y-5"
-          >
-
-            <Input
-              label="Visit Date"
-              type="date"
-              value={visitDate}
-              onChange={(e) => setVisitDate(e.target.value)}
-              required
-            />
-
-            <Input
-              label="Height (cm)"
-              type="number"
-              value={height}
-              onChange={(e) => setHeight(e.target.value)}
-              required
-            />
-
-            <Input
-              label="Weight (kg)"
-              type="number"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
-              required
-            />
-
-            <Input
-              label="BMI"
-              value={bmi || ""}
-              readOnly
-            />
-
-            <Button type="submit">
-              Continue →
-            </Button>
-
-          </form>
-
-        </Card>
-
+        <Suspense fallback={<div className="text-center py-12 text-[#5C7079]">Loading...</div>}>
+          <VitalsForm />
+        </Suspense>
       </main>
     </>
   );
