@@ -17,28 +17,39 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <nav className="bg-white border-b">
+    <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[#DCE4E4]">
       <div className="max-w-7xl mx-auto h-16 px-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FaHospital className="text-blue-600" />
-          <span className="font-bold text-lg">MediCare</span>
+        <div className="flex items-center gap-2.5">
+          <span className="w-8 h-8 rounded-lg bg-[#1B4B91] flex items-center justify-center">
+            <FaHospital className="text-white text-sm" />
+          </span>
+          <span
+            className="text-xl text-[#14232B]"
+            style={{ fontFamily: "var(--font-display)", fontStyle: "italic", fontWeight: 600 }}
+          >
+            MediCare
+          </span>
         </div>
 
-        <div className="hidden md:flex gap-8">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={clsx(
-                "text-sm font-medium hover:text-blue-600",
-                pathname === link.href
-                  ? "text-blue-600"
-                  : "text-slate-600"
-              )}
-            >
-              {link.label}
-            </Link>
-          ))}
+        <div className="hidden md:flex items-center gap-1">
+          {links.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={clsx(
+                  "relative px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.08em] transition-colors",
+                  isActive ? "text-[#1B4B91]" : "text-[#5C7079] hover:text-[#14232B]"
+                )}
+              >
+                {link.label}
+                {isActive && (
+                  <span className="absolute left-3 right-3 -bottom-[1px] h-[2px] bg-[#1B4B91] rounded-full" />
+                )}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </nav>

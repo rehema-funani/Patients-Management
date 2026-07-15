@@ -34,7 +34,7 @@ export default function PatientsPage() {
 
       <main className="max-w-7xl mx-auto p-8">
 
-        <Stepper current={2} />
+        <Stepper current={5} />
 
         <h1 className="text-3xl font-bold mb-8">
           Registered Patients

@@ -64,7 +64,7 @@ export default function VitalsPage() {
 
       <main className="max-w-3xl mx-auto p-8">
 
-        <Stepper current={3} />
+        <Stepper current={2} />
 
         <Card>
 
