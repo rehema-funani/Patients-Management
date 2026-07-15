@@ -5,13 +5,23 @@ performing conditional health assessments, and viewing a filterable patient list
 
 Built for the Intellisoft Web App & Backend Development practical assignment.
 
+## Live Demo
+
+- **Frontend (live)**: https://patients-management-rosy.vercel.app/
+- **Backend (live API)**: https://patient-management-backend-e85b.onrender.com/api
+
+## Repositories
+
+- **Frontend**: https://github.com/rehema-funani/Patients-Management.git
+- **Backend**: https://github.com/rehema-funani/Patient-Management-Backend.git
+
 ## Approach
 
 This project uses a **custom backend built from scratch**, rather than the API provided in the 
 Postman collection.
 
-- Backend: Django REST Framework, deployed at `https://patient-management-backend-e85b.onrender.com`
-- Frontend: Next.js (App Router), TypeScript, Tailwind CSS
+- Backend: Django REST Framework, deployed on Render
+- Frontend: Next.js (App Router), TypeScript, Tailwind CSS, deployed on Vercel
 
 ## Application Flow
 
@@ -30,6 +40,7 @@ Postman collection.
 - Next.js (App Router) + TypeScript
 - Tailwind CSS
 - Axios for API requests
+- Deployed on Vercel
 
 **Backend**
 - Django + Django REST Framework
@@ -43,19 +54,25 @@ Postman collection.
 
 ## Running Locally
 
+**Frontend**
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/rehema-funani/Patients-Management.git
 cd Patients-Management
 npm install
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3000](http://localhost:3000) in your browser. By default it talks to the 
+live deployed backend at `https://patient-management-backend-e85b.onrender.com/api`.
 
-The app talks to the live deployed backend at:
-`https://patient-management-backend-e85b.onrender.com/api`
-
-No local backend setup is required — the app connects to the deployed API directly.
+**Backend** (optional — only needed if you want to run it locally instead of using the deployed version)
+```bash
+git clone https://github.com/rehema-funani/Patient-Management-Backend.git
+cd Patient-Management-Backend
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
 
 ## API Endpoints
 
