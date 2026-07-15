@@ -13,6 +13,7 @@ import WelcomeCard from "../WelcomeCard";
 
 import { registerPatient } from "@/app/services/patient";
 import { useToast } from "@/app/hooks/useToast";
+import { getErrorMessage } from "@/app/utils/errorMessage";
 
 export default function RegistrationForm() {
   const router = useRouter();
@@ -57,15 +58,9 @@ export default function RegistrationForm() {
       console.error("API Error:", error);
 
       if (axios.isAxiosError(error)) {
-        const data = error.response?.data;
-        const message =
-          typeof data === "object" && data !== null
-            ? Object.values(data).flat().join(" ")
-            : "Failed to register patient.";
-
-        showToast(message, "error");
+        showToast(getErrorMessage(error.response?.data), "error");
       } else {
-        showToast("Failed to register patient.", "error");
+        showToast("Failed to register patient. Please try again.", "error");
       }
     } finally {
       setLoading(false);
