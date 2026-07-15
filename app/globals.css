@@ -13,6 +13,17 @@ body {
   font-family: var(--font-body);
 }
 
+@keyframes slideIn {
+  from {
+    transform: translate(-50%, -12px);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
 /* :root {
   --background: #ffffff;
   --foreground: #171717;

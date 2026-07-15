@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { FaHospital } from "react-icons/fa";
+import { FaHospital, FaBars, FaTimes } from "react-icons/fa";
 import clsx from "clsx";
 
 const links = [
@@ -13,6 +14,7 @@ const links = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [open, setOpen] = useState(false);
 
   return (
     <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[#DCE4E4]">
@@ -29,6 +31,7 @@ export default function Navbar() {
           </span>
         </div>
 
+        {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
           {links.map((link) => {
             const isActive = pathname === link.href;
@@ -49,7 +52,40 @@ export default function Navbar() {
             );
           })}
         </div>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setOpen(!open)}
+          className="md:hidden w-9 h-9 flex items-center justify-center text-[#14232B]"
+          aria-label={open ? "Close menu" : "Open menu"}
+        >
+          {open ? <FaTimes /> : <FaBars />}
+        </button>
       </div>
+
+      {/* Mobile menu panel */}
+      {open && (
+        <div className="md:hidden border-t border-[#DCE4E4] bg-white px-6 py-3 flex flex-col gap-1">
+          {links.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setOpen(false)}
+                className={clsx(
+                  "px-3 py-2.5 rounded-lg text-sm font-semibold transition-colors",
+                  isActive
+                    ? "bg-[#1B4B91]/10 text-[#1B4B91]"
+                    : "text-[#5C7079] hover:bg-[#F6F8F8] hover:text-[#14232B]"
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </div>
+      )}
     </nav>
   );
 }

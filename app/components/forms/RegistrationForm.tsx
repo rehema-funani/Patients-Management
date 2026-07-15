@@ -8,12 +8,15 @@ import Card from "../ui/Card";
 import Input from "../ui/Input";
 import Select from "../ui/Select";
 import Button from "../ui/Button";
+import Toast from "../ui/Toast";
 import WelcomeCard from "../WelcomeCard";
 
 import { registerPatient } from "@/app/services/patient";
+import { useToast } from "@/app/hooks/useToast";
 
 export default function RegistrationForm() {
   const router = useRouter();
+  const { toast, showToast, hideToast } = useToast();
 
   const [loading, setLoading] = useState(false);
 
@@ -40,8 +43,6 @@ export default function RegistrationForm() {
   ) => {
     e.preventDefault();
 
-    console.log("Submitting:", form);
-
     try {
       setLoading(true);
 
@@ -49,21 +50,22 @@ export default function RegistrationForm() {
 
       console.log("API Success:", response);
 
-      alert("Patient registered successfully!");
+      showToast("Patient registered successfully!", "success");
 
-      router.push("/patients");
+      setTimeout(() => router.push("/patients"), 900);
     } catch (error) {
       console.error("API Error:", error);
 
       if (axios.isAxiosError(error)) {
-        console.log("Status:", error.response?.status);
-        console.log("Data:", error.response?.data);
+        const data = error.response?.data;
+        const message =
+          typeof data === "object" && data !== null
+            ? Object.values(data).flat().join(" ")
+            : "Failed to register patient.";
 
-        alert(
-          JSON.stringify(error.response?.data ?? "Unknown server error")
-        );
+        showToast(message, "error");
       } else {
-        alert("Failed to register patient.");
+        showToast("Failed to register patient.", "error");
       }
     } finally {
       setLoading(false);
@@ -72,6 +74,10 @@ export default function RegistrationForm() {
 
   return (
     <div className="grid lg:grid-cols-2 gap-8">
+
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={hideToast} />
+      )}
 
       <Card>
 
